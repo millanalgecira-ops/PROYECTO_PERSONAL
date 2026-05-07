@@ -1,0 +1,13 @@
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos temporales PHP
+*.log
+*.tmp
+
+# Configuración local (si cambias credenciales)
+# Config/database.php
+
+# Carpeta de imágenes subidas (si las hay)
+IMG/uploads/
