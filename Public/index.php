@@ -1,4 +1,6 @@
-<?php session_start(); ?>
+<?php session_start();
+require_once __DIR__ . '/../Config/rutas.php';
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,498 +9,8 @@
     <title>La Parrilla – Asadero & Restaurante</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        :root {
-            --black:   #0e0e0e;
-            --dark:    #141414;
-            --card:    #1c1a18;
-            --card2:   #221f1b;
-            --border:  #2e2b27;
-            --orange:  #f07000;
-            --orange2: #e06500;
-            --text:    #f0ece6;
-            --muted:   #8a8078;
-            --label:   #c8bfb0;
-        }
-
-        html { scroll-behavior: smooth; }
-
-        body {
-            font-family: 'Barlow', sans-serif;
-            background: var(--black);
-            color: var(--text);
-            overflow-x: hidden;
-        }
-
-        /* ═══════════════════════ NAV ═══════════════════════ */
-        nav {
-            position: fixed; top: 0; left: 0; right: 0;
-            z-index: 100;
-            background: rgba(14,14,14,.92);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 40px;
-            height: 60px;
-        }
-
-        .nav-brand {
-            display: flex; align-items: center; gap: 10px;
-            text-decoration: none;
-        }
-
-        .nav-brand-text { line-height: 1; }
-        .nav-brand-name {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 22px; letter-spacing: 1px; color: var(--text);
-        }
-        .nav-brand-sub {
-            font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
-            color: var(--orange);
-        }
-
-        .nav-links { display: flex; gap: 32px; list-style: none; }
-        .nav-links a {
-            font-size: 14px; font-weight: 500; color: var(--label);
-            text-decoration: none; transition: color .2s;
-        }
-        .nav-links a:hover { color: var(--text); }
-
-        .nav-right { display: flex; align-items: center; gap: 14px; }
-
-        .btn-cart {
-            position: relative;
-            background: none; border: 1px solid var(--border);
-            border-radius: 8px; width: 38px; height: 38px;
-            display: flex; align-items: center; justify-content: center;
-            color: var(--label); cursor: pointer; text-decoration: none;
-            transition: border-color .2s, color .2s;
-        }
-        .btn-cart:hover { border-color: var(--orange); color: var(--orange); }
-        .cart-badge {
-            position: absolute; top: -6px; right: -6px;
-            background: var(--orange); color: #fff;
-            font-size: 10px; font-weight: 700;
-            width: 18px; height: 18px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            display: none;
-        }
-
-        .btn-nav-login {
-            display: flex; align-items: center; gap: 8px;
-            background: none; border: 1px solid var(--border);
-            border-radius: 8px; padding: 8px 16px;
-            color: var(--label); font-size: 13px; font-family: 'Barlow', sans-serif;
-            cursor: pointer; text-decoration: none;
-            transition: border-color .2s, color .2s;
-        }
-        .btn-nav-login:hover { border-color: var(--orange); color: var(--orange); }
-
-        /* ═══════════════════════ HERO ═══════════════════════ */
-        #inicio {
-            position: relative;
-            min-height: 100vh;
-            display: flex; align-items: center;
-            padding: 80px 40px 60px;
-            overflow: hidden;
-        }
-
-        .hero-bg {
-            position: absolute; inset: 0;
-            background:
-                linear-gradient(to right, rgba(14,14,14,.96) 40%, rgba(14,14,14,.55) 100%),
-                url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=1400&q=80') center/cover no-repeat;
-        }
-
-        .hero-content {
-            position: relative; z-index: 1;
-            max-width: 560px;
-        }
-
-        .hero-badge {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: rgba(240,112,0,.15);
-            border: 1px solid rgba(240,112,0,.35);
-            border-radius: 20px;
-            padding: 6px 16px;
-            font-size: 13px; color: var(--orange);
-            margin-bottom: 24px;
-        }
-        .hero-badge-dot {
-            width: 7px; height: 7px; border-radius: 50%;
-            background: var(--orange);
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%,100%{ opacity:1; transform:scale(1); }
-            50%    { opacity:.5; transform:scale(1.4); }
-        }
-
-        .hero-title {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(52px, 7vw, 84px);
-            line-height: 1.0;
-            color: var(--text);
-            margin-bottom: 16px;
-        }
-        .hero-title span { color: var(--orange); }
-
-        .hero-desc {
-            font-size: 15px; font-weight: 300;
-            color: var(--label); line-height: 1.75;
-            margin-bottom: 36px; max-width: 400px;
-        }
-
-        .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 52px; }
-
-        .btn-orange {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: var(--orange); color: #fff;
-            border: none; border-radius: 8px;
-            padding: 14px 26px; font-size: 15px; font-family: 'Barlow', sans-serif;
-            font-weight: 600; cursor: pointer; text-decoration: none;
-            transition: background .2s, transform .15s;
-        }
-        .btn-orange:hover { background: var(--orange2); transform: translateY(-1px); }
-
-        .btn-outline {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: transparent; color: var(--text);
-            border: 1.5px solid rgba(255,255,255,.2);
-            border-radius: 8px; padding: 14px 26px;
-            font-size: 15px; font-family: 'Barlow', sans-serif; font-weight: 600;
-            cursor: pointer; text-decoration: none;
-            transition: border-color .2s, background .2s;
-        }
-        .btn-outline:hover { border-color: var(--text); background: rgba(255,255,255,.06); }
-
-        .hero-info { display: flex; gap: 32px; flex-wrap: wrap; }
-        .hero-info-item {
-            display: flex; align-items: flex-start; gap: 10px;
-        }
-        .hero-info-icon {
-            width: 36px; height: 36px; border-radius: 50%;
-            border: 1.5px solid rgba(240,112,0,.35);
-            display: flex; align-items: center; justify-content: center;
-            color: var(--orange); flex-shrink: 0;
-        }
-        .hero-info-text strong { display: block; font-size: 13px; font-weight: 600; }
-        .hero-info-text span  { font-size: 13px; color: var(--muted); }
-
-        /* ═══════════════════════ MENU SECTION ═══════════════════════ */
-        #menu {
-            padding: 90px 40px;
-            background: var(--dark);
-        }
-
-        .section-tag {
-            text-align: center; font-size: 12px; letter-spacing: 4px;
-            text-transform: uppercase; color: var(--orange);
-            margin-bottom: 12px;
-        }
-
-        .section-title {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(36px, 5vw, 56px);
-            text-align: center; color: var(--text);
-            margin-bottom: 10px;
-        }
-
-        .section-desc {
-            text-align: center; font-size: 14px; color: var(--muted);
-            max-width: 480px; margin: 0 auto 52px;
-        }
-
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            max-width: 1100px; margin: 0 auto;
-        }
-
-        .menu-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            overflow: hidden;
-            transition: transform .2s, border-color .2s;
-        }
-        .menu-card:hover { transform: translateY(-4px); border-color: rgba(240,112,0,.3); }
-
-        .menu-card-img {
-            position: relative;
-            height: 200px; overflow: hidden;
-        }
-        .menu-card-img img {
-            width: 100%; height: 100%; object-fit: cover;
-            transition: transform .35s;
-        }
-        .menu-card:hover .menu-card-img img { transform: scale(1.05); }
-
-        .tag-popular {
-            position: absolute; top: 12px; left: 12px;
-            background: var(--orange); color: #fff;
-            font-size: 11px; font-weight: 700; padding: 3px 10px;
-            border-radius: 20px;
-        }
-
-        .menu-card-body { padding: 18px 18px 16px; }
-
-        .menu-card-top {
-            display: flex; justify-content: space-between; align-items: baseline;
-            margin-bottom: 8px;
-        }
-
-        .menu-card-name { font-size: 17px; font-weight: 700; }
-        .menu-card-price {
-            font-size: 16px; font-weight: 700; color: var(--orange);
-            white-space: nowrap;
-        }
-
-        .menu-card-desc {
-            font-size: 13px; color: var(--muted);
-            line-height: 1.6; margin-bottom: 14px;
-        }
-
-        .btn-add {
-            width: 100%;
-            background: rgba(240,112,0,.12);
-            border: 1px solid rgba(240,112,0,.25);
-            border-radius: 8px;
-            padding: 10px;
-            color: var(--orange); font-size: 14px; font-family: 'Barlow', sans-serif;
-            font-weight: 600; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-            transition: background .2s, border-color .2s;
-        }
-        .btn-add:hover { background: var(--orange); color: #fff; border-color: var(--orange); }
-
-        /* ═══════════════════════ PROMOCIONES ═══════════════════════ */
-        #promociones {
-            padding: 90px 40px;
-            background: var(--black);
-        }
-
-        .promo-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 16px;
-            max-width: 1100px; margin: 0 auto 32px;
-        }
-
-        .promo-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 28px 24px;
-            transition: border-color .2s;
-        }
-        .promo-card:hover { border-color: rgba(240,112,0,.3); }
-
-        .promo-icon {
-            width: 48px; height: 48px; border-radius: 12px;
-            background: rgba(240,112,0,.15);
-            display: flex; align-items: center; justify-content: center;
-            color: var(--orange); margin-bottom: 20px;
-        }
-
-        .promo-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
-        .promo-card p  { font-size: 13px; color: var(--muted); line-height: 1.65; margin-bottom: 18px; }
-
-        .link-orange {
-            font-size: 13px; font-weight: 600; color: var(--orange);
-            text-decoration: none; display: inline-flex; align-items: center; gap: 4px;
-        }
-        .link-orange:hover { text-decoration: underline; }
-
-        /* Combo banner */
-        .combo-banner {
-            max-width: 1100px; margin: 0 auto;
-            background: linear-gradient(135deg, #2a1a08 0%, #3d2410 100%);
-            border: 1px solid rgba(240,112,0,.25);
-            border-radius: 16px;
-            padding: 36px 40px;
-        }
-
-        .combo-tag {
-            display: inline-block;
-            background: var(--orange); color: #fff;
-            font-size: 11px; font-weight: 700;
-            padding: 4px 12px; border-radius: 20px;
-            margin-bottom: 14px;
-        }
-
-        .combo-banner h2 {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 36px; color: var(--text); margin-bottom: 8px;
-        }
-
-        .combo-banner p { font-size: 14px; color: var(--label); margin-bottom: 22px; }
-
-        /* ═══════════════════════ NOSOTROS ═══════════════════════ */
-        #nosotros {
-            padding: 90px 40px;
-            background: var(--dark);
-            text-align: center;
-        }
-        #nosotros p {
-            max-width: 600px; margin: 0 auto;
-            font-size: 15px; color: var(--muted); line-height: 1.8;
-        }
-
-        /* ═══════════════════════ CONTACTO ═══════════════════════ */
-        #contacto {
-            padding: 90px 40px;
-            background: var(--black);
-            text-align: center;
-        }
-        .contacto-info { margin-top: 30px; display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
-        .contacto-item { font-size: 15px; color: var(--label); }
-        .contacto-item strong { color: var(--orange); display: block; margin-bottom: 4px; }
-
-        /* ═══════════════════════ FOOTER ═══════════════════════ */
-        footer {
-            background: var(--dark);
-            border-top: 1px solid var(--border);
-            padding: 56px 40px 24px;
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: 1.8fr 1fr 1fr 1.4fr;
-            gap: 40px;
-            max-width: 1100px; margin: 0 auto 40px;
-        }
-
-        .footer-brand-name {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 24px; color: var(--text); margin-bottom: 4px;
-        }
-        .footer-brand-sub {
-            font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
-            color: var(--orange); margin-bottom: 14px; display: block;
-        }
-        .footer-brand-desc { font-size: 13px; color: var(--muted); line-height: 1.75; margin-bottom: 20px; }
-
-        .footer-social { display: flex; gap: 10px; }
-        .social-btn {
-            width: 34px; height: 34px; border-radius: 8px;
-            border: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: center;
-            color: var(--muted); text-decoration: none;
-            transition: border-color .2s, color .2s;
-        }
-        .social-btn:hover { border-color: var(--orange); color: var(--orange); }
-
-        .footer-col h4 { font-size: 14px; font-weight: 700; margin-bottom: 18px; }
-        .footer-col ul { list-style: none; }
-        .footer-col li { margin-bottom: 10px; }
-        .footer-col a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color .2s; }
-        .footer-col a:hover { color: var(--orange); }
-
-        .footer-contact-item {
-            display: flex; align-items: flex-start; gap: 10px;
-            font-size: 13px; color: var(--muted); margin-bottom: 12px;
-        }
-        .footer-contact-item svg { color: var(--orange); flex-shrink: 0; margin-top: 1px; }
-
-        .footer-bottom {
-            max-width: 1100px; margin: 0 auto;
-            border-top: 1px solid var(--border);
-            padding-top: 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            flex-wrap: wrap; gap: 12px;
-        }
-        .footer-bottom p { font-size: 12px; color: var(--muted); }
-        .footer-bottom-links { display: flex; gap: 20px; }
-        .footer-bottom-links a { font-size: 12px; color: var(--muted); text-decoration: none; }
-        .footer-bottom-links a:hover { color: var(--orange); }
-
-        /* ═══════════════════════ MODAL AUTH ═══════════════════════ */
-        .modal-overlay {
-            display: none; position: fixed; inset: 0; z-index: 300;
-            background: rgba(0,0,0,.75); align-items: center; justify-content: center;
-            backdrop-filter: blur(4px);
-        }
-        .modal-overlay.open { display: flex; }
-        .modal-auth {
-            background: #1a1a1a; border: 1px solid var(--border);
-            border-radius: 16px; width: 100%; max-width: 420px;
-            overflow: hidden; position: relative;
-        }
-        .modal-tabs {
-            display: flex; border-bottom: 1px solid var(--border);
-        }
-        .modal-tab {
-            flex: 1; padding: 16px; text-align: center;
-            font-size: 14px; font-weight: 600; color: var(--muted);
-            cursor: pointer; background: none; border: none;
-            font-family: 'Barlow', sans-serif;
-            border-bottom: 2px solid transparent;
-            transition: color .2s, border-color .2s;
-        }
-        .modal-tab.active { color: var(--orange); border-bottom-color: var(--orange); }
-        .modal-body { padding: 28px; }
-        .modal-close {
-            position: absolute; top: 14px; right: 14px;
-            background: none; border: none; color: var(--muted);
-            cursor: pointer; font-size: 20px; line-height: 1;
-            transition: color .2s;
-        }
-        .modal-close:hover { color: var(--text); }
-        .auth-form { display: none; }
-        .auth-form.active { display: block; }
-        .auth-form h2 {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 28px; margin-bottom: 6px;
-        }
-        .auth-form p { font-size: 13px; color: var(--muted); margin-bottom: 22px; }
-        .auth-field { margin-bottom: 16px; }
-        .auth-field label { display: block; font-size: 13px; color: var(--label); margin-bottom: 6px; }
-        .auth-field input {
-            width: 100%; background: #222; border: 1px solid var(--border);
-            border-radius: 8px; padding: 11px 14px;
-            font-size: 14px; font-family: 'Barlow', sans-serif;
-            color: var(--text); outline: none; transition: border-color .2s;
-        }
-        .auth-field input:focus { border-color: var(--orange); }
-        .auth-field input::placeholder { color: var(--muted); }
-        .btn-auth {
-            width: 100%; background: var(--orange); color: #fff;
-            border: none; border-radius: 8px; padding: 13px;
-            font-size: 15px; font-family: 'Barlow', sans-serif;
-            font-weight: 600; cursor: pointer; margin-top: 6px;
-            transition: background .2s;
-        }
-        .btn-auth:hover { background: var(--orange2); }
-        .auth-alert {
-            padding: 10px 14px; border-radius: 8px;
-            font-size: 13px; margin-bottom: 16px; display: none;
-        }
-        .auth-alert.error   { background: rgba(240,112,0,.12); border: 1px solid var(--orange); color: var(--orange); }
-        .auth-alert.success { background: rgba(0,200,100,.1);  border: 1px solid #00c864; color: #00c864; }
-        .auth-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .toast {
-            position: fixed; bottom: 24px; right: 24px; z-index: 200;
-            background: var(--card2); border: 1px solid var(--orange);
-            border-radius: 12px; padding: 14px 20px;
-            font-size: 14px; color: var(--text);
-            transform: translateY(80px); opacity: 0;
-            transition: all .3s; pointer-events: none;
-        }
-        .toast.show { transform: none; opacity: 1; }
-
-        /* ═══════════════════════ CART TOAST ═══════════════════════ */
-        @media (max-width: 768px) {
-            nav { padding: 0 20px; }
-            .nav-links { display: none; }
-            #inicio, #menu, #promociones, #nosotros, #contacto { padding-left: 20px; padding-right: 20px; }
-            .footer-grid { grid-template-columns: 1fr 1fr; }
-            footer { padding: 40px 20px 20px; }
-        }
-    </style>
+    <link rel="stylesheet" href="<?= URL_PUBLIC ?>/css/index.css">
+    <link rel="stylesheet" href="<?= URL_PUBLIC ?>/css/chatbox.css">
 </head>
 <body>
 
@@ -557,7 +69,11 @@
         <p class="hero-desc">Desde 1995 preparando el mejor pollo asado con nuestra receta secreta. Carnes jugosas, sabor inigualable y el calor de hogar.</p>
         <div class="hero-actions">
             <a href="#menu" class="btn-orange">Ver Menú &nbsp;→</a>
-            <a href="carrito.php" class="btn-outline">Ordenar Ahora</a>
+            <?php if(isset($_SESSION['usuario'])): ?>
+                <a href="carrito.php" class="btn-outline">Ordenar Ahora</a>
+            <?php else: ?>
+                <a href="#" class="btn-outline" onclick="abrirLoginParaOrdenar(event)">Ordenar Ahora</a>
+            <?php endif; ?>
         </div>
         <div class="hero-info">
             <div class="hero-info-item">
@@ -588,52 +104,103 @@
     <h2 class="section-title">Platos que enamoran</h2>
     <p class="section-desc">Cada plato preparado con ingredientes frescos y el amor de nuestra cocina tradicional</p>
 
-    <div class="menu-grid">
-        <?php
-        require_once __DIR__ . '/../Config/database.php';
-        $db     = (new Database())->conectar();
-        $platos = $db->query("
-            SELECT p.id, p.nombre, p.descripcion, p.precio, p.popular, p.imagen_url
-            FROM productos p
-            WHERE p.disponible = 1
-            ORDER BY p.popular DESC, p.nombre
-        ")->fetchAll(PDO::FETCH_ASSOC);
+    <?php
+    require_once __DIR__ . '/../Config/database.php';
+    $db = (new Database())->conectar();
 
-        // Imágenes por defecto si no hay imagen_url
-        $imgs_default = [
-            'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600&q=80',
-            'https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=600&q=80',
-            'https://images.unsplash.com/photo-1562967914-608f82629710?w=600&q=80',
-            'https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=600&q=80',
-            'https://images.unsplash.com/photo-1516684732162-798a0062be99?w=600&q=80',
-            'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=600&q=80',
-        ];
+    // Cargar categorías activas con conteo de productos disponibles
+    $categorias_menu = $db->query("
+        SELECT c.id, c.nombre, c.imagen_url,
+               COUNT(p.id) AS total_productos,
+               SUM(CASE WHEN p.disponible=1 THEN 1 ELSE 0 END) AS disponibles
+        FROM categorias c
+        LEFT JOIN productos p ON p.categoria_id = c.id
+        WHERE c.activa = 1
+        GROUP BY c.id
+        ORDER BY c.orden, c.nombre
+    ")->fetchAll(PDO::FETCH_ASSOC);
 
-        foreach($platos as $i => $p):
-            $img   = !empty($p['imagen_url']) ? $p['imagen_url'] : $imgs_default[$i % count($imgs_default)];
+    // Cargar TODOS los productos (disponibles y agotados) con su categoría
+    $todos_productos = $db->query("
+        SELECT p.id, p.nombre, p.descripcion, p.precio, p.popular, p.disponible,
+               p.imagen_url, p.categoria_id, c.nombre AS categoria_nombre
+        FROM productos p
+        LEFT JOIN categorias c ON c.id = p.categoria_id
+        WHERE c.activa = 1
+        ORDER BY p.popular DESC, p.nombre
+    ")->fetchAll(PDO::FETCH_ASSOC);
+
+    $imgs_default = [
+        'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600&q=80',
+        'https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=600&q=80',
+        'https://images.unsplash.com/photo-1562967914-608f82629710?w=600&q=80',
+        'https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=600&q=80',
+        'https://images.unsplash.com/photo-1516684732162-798a0062be99?w=600&q=80',
+        'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=600&q=80',
+    ];
+    ?>
+
+    <!-- FILTROS DE CATEGORÍA -->
+    <div class="cat-filtros">
+        <button class="cat-btn active" onclick="filtrarCategoria('todos', this)">
+            <span class="cat-btn-nombre">Todos</span>
+            <span class="cat-btn-count"><?= count($todos_productos) ?></span>
+        </button>
+        <?php foreach($categorias_menu as $cat): ?>
+        <button class="cat-btn" onclick="filtrarCategoria('cat-<?= $cat['id'] ?>', this)">
+            <span class="cat-btn-nombre"><?= htmlspecialchars($cat['nombre']) ?></span>
+            <span class="cat-btn-count"><?= $cat['total_productos'] ?></span>
+        </button>
+        <?php endforeach; ?>
+    </div>
+
+    <!-- GRID DE PRODUCTOS -->
+    <div class="menu-grid" id="menuGrid">
+        <?php if(empty($todos_productos)): ?>
+            <p style="color:var(--muted);text-align:center;grid-column:1/-1;padding:40px">No hay productos disponibles en este momento.</p>
+        <?php else: ?>
+        <?php foreach($todos_productos as $i => $p):
+            $img        = !empty($p['imagen_url']) ? $p['imagen_url'] : $imgs_default[$i % count($imgs_default)];
             $precio_fmt = '$ ' . number_format($p['precio'], 0, ',', '.');
+            $agotado    = !$p['disponible'];
         ?>
-        <div class="menu-card">
+        <div class="menu-card <?= $agotado ? 'agotado' : '' ?>" data-cat="cat-<?= $p['categoria_id'] ?>">
             <div class="menu-card-img">
-                <img src="<?= htmlspecialchars($img) ?>" alt="<?= htmlspecialchars($p['nombre']) ?>" loading="lazy">
-                <?php if($p['popular']): ?><span class="tag-popular">Popular</span><?php endif; ?>
+                <img src="<?= htmlspecialchars($img) ?>" alt="<?= htmlspecialchars($p['nombre']) ?>" loading="lazy"
+                     style="<?= $agotado ? 'opacity:.45;filter:grayscale(.4)' : '' ?>">
+                <?php if($p['popular'] && !$agotado): ?>
+                    <span class="tag-popular">⭐ Popular</span>
+                <?php endif; ?>
+                <?php if($agotado): ?>
+                    <span class="tag-agotado">Agotado</span>
+                <?php endif; ?>
             </div>
             <div class="menu-card-body">
                 <div class="menu-card-top">
                     <span class="menu-card-name"><?= htmlspecialchars($p['nombre']) ?></span>
-                    <span class="menu-card-price"><?= $precio_fmt ?></span>
+                    <span class="menu-card-price" style="<?= $agotado ? 'color:var(--muted)' : '' ?>"><?= $precio_fmt ?></span>
                 </div>
                 <p class="menu-card-desc"><?= htmlspecialchars($p['descripcion'] ?? '') ?></p>
-                <button class="btn-add" onclick="addToCart(<?= $p['id'] ?>, '<?= addslashes($p['nombre']) ?>', '<?= $precio_fmt ?>', '<?= addslashes($img) ?>')">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                    Agregar
-                </button>
+                <?php if($agotado): ?>
+                    <button class="btn-add" disabled style="opacity:.4;cursor:not-allowed;background:rgba(255,255,255,.04);color:var(--muted);border-color:var(--border)">
+                        Sin disponibilidad
+                    </button>
+                <?php else: ?>
+                    <button class="btn-add" onclick="agregarProducto(<?= $p['id'] ?>, '<?= addslashes($p['nombre']) ?>', '<?= $precio_fmt ?>', '<?= addslashes($img) ?>')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Agregar
+                    </button>
+                <?php endif; ?>
             </div>
         </div>
         <?php endforeach; ?>
-        <?php if (empty($platos)): ?>
-            <p style="color:var(--muted);text-align:center;grid-column:1/-1;padding:40px">No hay productos disponibles en este momento.</p>
         <?php endif; ?>
+    </div>
+
+    <!-- MENSAJE CATEGORÍA VACÍA -->
+    <div id="msgCatVacia" style="display:none;text-align:center;padding:48px 20px;color:var(--muted)">
+        <p style="font-size:15px;margin-bottom:8px">Sin productos disponibles en este momento</p>
+        <p style="font-size:13px">Explora otras categorías del menú</p>
     </div>
 </section>
 
@@ -658,23 +225,11 @@
             </div>
             <h3>Domicilio Gratis</h3>
             <p>En pedidos mayores a $50.000 dentro de la zona</p>
-            <a href="carrito.php" class="link-orange">Ordenar →</a>
+            <a href="<?= isset($_SESSION['usuario']) ? 'carrito.php' : '#' ?>" 
+               class="link-orange"
+               <?= !isset($_SESSION['usuario']) ? 'onclick="abrirLoginParaOrdenar(event)"' : '' ?>>Ordenar →</a>
         </div>
-        <div class="promo-card">
-            <div class="promo-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
-            </div>
-            <h3>Programa de Puntos</h3>
-            <p>Acumula puntos y canjéalos por productos gratis</p>
-            <a href="registro.php" class="link-orange">Regístrate →</a>
         </div>
-    </div>
-
-    <div class="combo-banner">
-        <span class="combo-tag">Oferta Limitada</span>
-        <h2>Combo Fin de Semana</h2>
-        <p>2 pollos enteros + papas grandes + ensalada familiar + gaseosa 3L por solo $89.900</p>
-        <button class="btn-orange">Pedir Ahora</button>
     </div>
 </section>
 
@@ -895,6 +450,32 @@ function updateBadge() {
     badge.textContent = count;
     badge.style.display = count > 0 ? 'flex' : 'none';
 }
+const SESION_ACTIVA = <?= isset($_SESSION['usuario']) ? 'true' : 'false' ?>;
+
+function abrirLoginParaOrdenar(e) {
+    e.preventDefault();
+    document.getElementById('modalAuth').classList.add('open');
+    switchTab('login');
+    const alerta = document.getElementById('alertLogin');
+    alerta.textContent = 'Debes iniciar sesión para realizar un pedido.';
+    alerta.className = 'auth-alert error';
+    alerta.style.display = 'block';
+}
+
+function agregarProducto(id, nombre, precio, img) {
+    if (!SESION_ACTIVA) {
+        // Mostrar modal de login con mensaje
+        document.getElementById('modalAuth').classList.add('open');
+        switchTab('login');
+        const alerta = document.getElementById('alertLogin');
+        alerta.textContent = 'Debes iniciar sesión para agregar productos al carrito.';
+        alerta.className = 'auth-alert error';
+        alerta.style.display = 'block';
+        return;
+    }
+    addToCart(id, nombre, precio, img);
+}
+
 function addToCart(id, nombre, precio, img) {
     const cart = getCart();
     const idx  = cart.findIndex(i=>i.id===id);
@@ -910,6 +491,29 @@ function showToast(msg) {
     setTimeout(()=>t.classList.remove('show'), 2500);
 }
 updateBadge();
+
+// ─── FILTRO DE CATEGORÍAS ───
+function filtrarCategoria(cat, btn) {
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cards    = document.querySelectorAll('.menu-card');
+    const msgVacia = document.getElementById('msgCatVacia');
+    const grid     = document.getElementById('menuGrid');
+    let visibles   = 0;
+    cards.forEach(card => {
+        const mostrar = cat === 'todos' || card.dataset.cat === cat;
+        card.style.display = mostrar ? '' : 'none';
+        if (mostrar) visibles++;
+    });
+    if (visibles === 0) {
+        grid.style.display = 'none';
+        msgVacia.style.display = 'block';
+    } else {
+        grid.style.display = 'grid';
+        msgVacia.style.display = 'none';
+    }
+}
 </script>
+<script src="<?= URL_PUBLIC ?>/js/chatbox.js"></script>
 </body>
 </html>

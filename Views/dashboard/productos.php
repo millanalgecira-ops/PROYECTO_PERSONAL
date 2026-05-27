@@ -9,6 +9,7 @@ $alert   = $_SESSION['alert'] ?? null;
 unset($_SESSION['alert']);
 
 require_once __DIR__ . '/../../Config/database.php';
+require_once __DIR__ . '/../../Config/rutas.php';
 $db = (new Database())->conectar();
 
 // Obtener productos con categoría
@@ -263,7 +264,7 @@ $categorias = $db->query("SELECT id, nombre FROM categorias WHERE activa = 1 ORD
                                 <?= $p['disponible'] ? 'Agotar' : 'Activar' ?>
                             </a>
                             <a class="btn-delete" href="../../Controllers/ProductoController.php?accion=eliminar&id=<?= $p['id'] ?>"
-                               onclick="return confirm('¿Eliminar este producto? Esta acción no se puede deshacer.')">
+                               onclick="return modalConfirm(event,this,'🗑️','¿Eliminar producto?','Esta acción no se puede deshacer. El producto será eliminado permanentemente.')">
                                 Eliminar
                             </a>
                         </div>
@@ -404,3 +405,32 @@ function filtrarTabla() {
 </script>
 </body>
 </html>
+
+<!-- MODAL CONFIRM -->
+<div id="mdOverlay" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);align-items:center;justify-content:center">
+    <div style="background:#1c1a18;border:1px solid #2e2b27;border-radius:16px;padding:32px 28px;width:100%;max-width:360px;text-align:center">
+        <div id="mdIcon"  style="font-size:38px;margin-bottom:12px"></div>
+        <div id="mdTitle" style="font-family:'Bebas Neue',sans-serif;font-size:22px;margin-bottom:8px;color:#f0ece6"></div>
+        <div id="mdText"  style="font-size:14px;color:#8a8078;margin-bottom:24px;line-height:1.6"></div>
+        <div style="display:flex;gap:10px;justify-content:center">
+            <button onclick="mdClose()" style="background:none;border:1px solid #2e2b27;border-radius:8px;padding:10px 24px;font-size:14px;font-family:'Barlow',sans-serif;color:#8a8078;cursor:pointer">Cancelar</button>
+            <button id="mdOk" style="background:#ff5050;border:none;border-radius:8px;padding:10px 24px;font-size:14px;font-family:'Barlow',sans-serif;font-weight:700;color:#fff;cursor:pointer">Eliminar</button>
+        </div>
+    </div>
+</div>
+<script>
+let _mdHref=null;
+function modalConfirm(e,el,icon,title,text){
+    e.preventDefault();
+    _mdHref=el.href;
+    document.getElementById('mdIcon').textContent=icon;
+    document.getElementById('mdTitle').textContent=title;
+    document.getElementById('mdText').textContent=text;
+    document.getElementById('mdOk').onclick=()=>{mdClose();location.href=_mdHref;};
+    const ov=document.getElementById('mdOverlay');
+    ov.style.display='flex';
+    ov.onclick=e=>{if(e.target===ov)mdClose();};
+    return false;
+}
+function mdClose(){document.getElementById('mdOverlay').style.display='none';}
+</script>

@@ -41,7 +41,34 @@
             font-size: 11px; font-weight: 700;
         }
 
-        /* LAYOUT */
+        /* MODAL PERSONALIZADO */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; z-index: 300;
+            background: rgba(0,0,0,.75); align-items: center; justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 16px; padding: 32px 28px; width: 100%; max-width: 380px;
+            text-align: center;
+        }
+        .modal-icon { font-size: 40px; margin-bottom: 14px; }
+        .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 24px; margin-bottom: 8px; }
+        .modal-text  { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+        .modal-btns  { display: flex; gap: 10px; justify-content: center; }
+        .modal-btn-ok {
+            background: var(--orange); color: #fff; border: none; border-radius: 8px;
+            padding: 11px 28px; font-size: 14px; font-family: 'Barlow', sans-serif;
+            font-weight: 600; cursor: pointer; transition: background .2s;
+        }
+        .modal-btn-ok:hover { background: var(--orange2); }
+        .modal-btn-cancel {
+            background: none; border: 1px solid var(--border); border-radius: 8px;
+            padding: 11px 28px; font-size: 14px; font-family: 'Barlow', sans-serif;
+            color: var(--muted); cursor: pointer; transition: border-color .2s, color .2s;
+        }
+        .modal-btn-cancel:hover { border-color: var(--orange); color: var(--orange); }
         .page { max-width: 1100px; margin: 0 auto; padding: 32px 24px; display: grid; grid-template-columns: 1fr 420px; gap: 28px; }
         @media (max-width: 860px) { .page { grid-template-columns: 1fr; } }
 
@@ -294,6 +321,56 @@
 
 </div>
 
+<!-- MODAL PERSONALIZADO -->
+<div class="modal-overlay" id="modalCustom">
+    <div class="modal-box">
+        <div class="modal-icon" id="modalIcon">⚠️</div>
+        <div class="modal-title" id="modalTitle">Aviso</div>
+        <div class="modal-text"  id="modalText"></div>
+        <div class="modal-btns" id="modalBtns">
+            <button class="modal-btn-ok" onclick="cerrarModal()">Aceptar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let _confirmCallback = null;
+
+function mostrarAlerta(icon, titulo, texto) {
+    document.getElementById('modalIcon').textContent  = icon;
+    document.getElementById('modalTitle').textContent = titulo;
+    document.getElementById('modalText').textContent  = texto;
+    document.getElementById('modalBtns').innerHTML =
+        '<button class="modal-btn-ok" onclick="cerrarModal()">Aceptar</button>';
+    _confirmCallback = null;
+    document.getElementById('modalCustom').classList.add('open');
+}
+
+function mostrarConfirm(titulo, texto, callback) {
+    document.getElementById('modalIcon').textContent  = '🗑️';
+    document.getElementById('modalTitle').textContent = titulo;
+    document.getElementById('modalText').textContent  = texto;
+    document.getElementById('modalBtns').innerHTML =
+        '<button class="modal-btn-cancel" onclick="cerrarModal()">Cancelar</button>' +
+        '<button class="modal-btn-ok" onclick="confirmarAccion()">Confirmar</button>';
+    _confirmCallback = callback;
+    document.getElementById('modalCustom').classList.add('open');
+}
+
+function confirmarAccion() {
+    cerrarModal();
+    if (_confirmCallback) _confirmCallback();
+}
+
+function cerrarModal() {
+    document.getElementById('modalCustom').classList.remove('open');
+}
+
+document.getElementById('modalCustom').addEventListener('click', function(e) {
+    if (e.target === this) cerrarModal();
+});
+</script>
+
 <script>
 const CART_KEY = 'laparrilla_cart';
 let tipoSeleccionado = 'mesa';
@@ -394,7 +471,9 @@ function eliminarItem(idx) {
 }
 
 function vaciarCarrito() {
-    if (confirm('¿Vaciar el carrito?')) { localStorage.removeItem(CART_KEY); renderCart(); }
+    mostrarConfirm('¿Vaciar el carrito?', 'Se eliminarán todos los productos agregados.', () => {
+        localStorage.removeItem(CART_KEY); renderCart();
+    });
 }
 
 function setTipo(tipo) {
@@ -417,9 +496,9 @@ function finalizarPedido() {
     const nota   = document.getElementById('notaEspecial').value.trim();
     const mesa   = document.getElementById('numeroMesa')?.value;
 
-    if (!nombre) { alert('Por favor ingresa tu nombre'); return; }
-    if (tipoSeleccionado === 'mesa' && !mesa) { alert('Por favor selecciona tu mesa'); return; }
-    if (cart.length === 0) { alert('Tu carrito está vacío'); return; }
+    if (!nombre) { mostrarAlerta('⚠️', 'Campo requerido', 'Por favor ingresa tu nombre completo.'); return; }
+    if (tipoSeleccionado === 'mesa' && !mesa) { mostrarAlerta('🪑', 'Selecciona tu mesa', 'Por favor selecciona el número de mesa donde estás sentado.'); return; }
+    if (cart.length === 0) { mostrarAlerta('🛒', 'Carrito vacío', 'Agrega al menos un producto antes de finalizar el pedido.'); return; }
 
     const btn = document.getElementById('btnFinalizar');
     btn.disabled = true;
@@ -445,13 +524,13 @@ function finalizarPedido() {
             localStorage.removeItem(CART_KEY);
             window.location.href = 'confirmacion.php?orden=' + res.numero_orden;
         } else {
-            alert('Error: ' + (res.message || 'No se pudo procesar el pedido'));
+            mostrarAlerta('❌', 'Error al procesar', res.message || 'No se pudo procesar el pedido. Intenta de nuevo.');
             btn.disabled = false;
             btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Finalizar Pedido';
         }
     })
     .catch(() => {
-        alert('Error de conexión. Intenta de nuevo.');
+        mostrarAlerta('📡', 'Error de conexión', 'No se pudo conectar con el servidor. Verifica tu conexión e intenta de nuevo.');
         btn.disabled = false;
         btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Finalizar Pedido';
     });

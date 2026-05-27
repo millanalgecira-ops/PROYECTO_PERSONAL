@@ -2,10 +2,11 @@
 session_start();
 
 require_once __DIR__ . '/../Config/database.php';
+require_once __DIR__ . '/../Config/rutas.php';
 require_once __DIR__ . '/../Models/usuario.php';
 
 if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'administrador') {
-    header("Location: ../Views/usuarios/login.php");
+    header("Location: " . URL_LOGIN);
     exit;
 }
 
@@ -27,7 +28,7 @@ class AdminUsuarioController {
 
     public function crear() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header("Location: ../Views/dashboard/admin.php");
+            header("Location: " . URL_VIEWS . "/dashboard/admin.php");
             exit;
         }
 
@@ -40,13 +41,13 @@ class AdminUsuarioController {
 
         if (empty($nombres) || empty($apellidos) || empty($email) || empty($password) || empty($rol)) {
             $this->setAlert('warning', 'Campos incompletos', 'Debe completar todos los campos obligatorios');
-            header("Location: ../Views/dashboard/admin.php");
+            header("Location: " . URL_VIEWS . "/dashboard/admin.php");
             exit;
         }
 
         if ($this->usuarioModel->existeCorreo($email)) {
             $this->setAlert('error', 'Correo existente', 'Este correo ya está registrado en el sistema');
-            header("Location: ../Views/dashboard/admin.php");
+            header("Location: " . URL_VIEWS . "/dashboard/admin.php");
             exit;
         }
 
@@ -66,20 +67,20 @@ class AdminUsuarioController {
             $this->setAlert('error', 'Error', $resultado);
         }
 
-        header("Location: ../Views/dashboard/admin.php");
+        header("Location: " . URL_VIEWS . "/dashboard/admin.php");
         exit;
     }
 
     public function editar() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header("Location: ../Views/dashboard/admin.php");
+            header("Location: " . URL_VIEWS . "/dashboard/admin.php");
             exit;
         }
 
         $id_usuario = $_POST['id_usuario'] ?? null;
         if (!$id_usuario) {
             $this->setAlert('error', 'Error', 'ID de usuario no proporcionado');
-            header("Location: ../Views/dashboard/admin.php");
+            header("Location: " . URL_VIEWS . "/dashboard/admin.php");
             exit;
         }
 
@@ -105,7 +106,7 @@ class AdminUsuarioController {
             $this->setAlert('error', 'Error', $resultado);
         }
 
-        header("Location: ../Views/dashboard/admin.php");
+        header("Location: " . URL_VIEWS . "/dashboard/admin.php");
         exit;
     }
 
@@ -127,7 +128,7 @@ class AdminUsuarioController {
             $this->setAlert('error', 'Error', 'Parámetros no válidos');
         }
 
-        header("Location: ../Views/dashboard/admin.php");
+        header("Location: " . URL_VIEWS . "/dashboard/admin.php");
         exit;
     }
 
@@ -144,7 +145,7 @@ switch ($accion) {
     case 'editar':       $controller->editar();       break;
     case 'toggleEstado': $controller->toggleEstado(); break;
     default:
-        header("Location: ../Views/dashboard/admin.php");
+        header("Location: " . URL_VIEWS . "/dashboard/admin.php");
         exit;
 }
 ?>

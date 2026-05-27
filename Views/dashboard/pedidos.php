@@ -9,6 +9,7 @@ $alert   = $_SESSION['alert'] ?? null;
 unset($_SESSION['alert']);
 
 require_once __DIR__ . '/../../Config/database.php';
+require_once __DIR__ . '/../../Config/rutas.php';
 $db = (new Database())->conectar();
 
 $filtro = $_GET['estado'] ?? 'todos';
@@ -174,7 +175,7 @@ $colores  = [
                         <?php if(!in_array($p['estado'],['Cancelado','Pagado'])): ?>
                         <a href="../../Controllers/PedidoController.php?accion=cancelar&id=<?= $p['id'] ?>"
                            style="padding:6px 10px;border-radius:6px;background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.25);color:#ff5050;font-size:11px;text-decoration:none;white-space:nowrap"
-                           onclick="return confirm('¿Cancelar este pedido?')">Cancelar</a>
+                           onclick="return modalConfirm(event,this,'🚫','¿Cancelar pedido?','El pedido #<?= $p['numero_orden'] ?> será cancelado y la mesa quedará libre.')">Cancelar</a>
                         <?php endif; ?>
                         </div>
                     </td>
@@ -186,5 +187,36 @@ $colores  = [
         </div>
     </div>
 </div>
+</body>
+</html>
+
+<!-- MODAL CONFIRM -->
+<div id="mdOverlay" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);align-items:center;justify-content:center">
+    <div style="background:#1c1a18;border:1px solid #2e2b27;border-radius:16px;padding:32px 28px;width:100%;max-width:360px;text-align:center">
+        <div id="mdIcon"  style="font-size:38px;margin-bottom:12px"></div>
+        <div id="mdTitle" style="font-family:'Bebas Neue',sans-serif;font-size:22px;margin-bottom:8px;color:#f0ece6"></div>
+        <div id="mdText"  style="font-size:14px;color:#8a8078;margin-bottom:24px;line-height:1.6"></div>
+        <div style="display:flex;gap:10px;justify-content:center">
+            <button onclick="mdClose()" style="background:none;border:1px solid #2e2b27;border-radius:8px;padding:10px 24px;font-size:14px;font-family:'Barlow',sans-serif;color:#8a8078;cursor:pointer">Cancelar</button>
+            <button id="mdOk" style="background:#ff5050;border:none;border-radius:8px;padding:10px 24px;font-size:14px;font-family:'Barlow',sans-serif;font-weight:700;color:#fff;cursor:pointer">Confirmar</button>
+        </div>
+    </div>
+</div>
+<script>
+let _mdHref=null;
+function modalConfirm(e,el,icon,title,text){
+    e.preventDefault();
+    _mdHref=el.href;
+    document.getElementById('mdIcon').textContent=icon;
+    document.getElementById('mdTitle').textContent=title;
+    document.getElementById('mdText').textContent=text;
+    document.getElementById('mdOk').onclick=()=>{mdClose();location.href=_mdHref;};
+    const ov=document.getElementById('mdOverlay');
+    ov.style.display='flex';
+    ov.onclick=e=>{if(e.target===ov)mdClose();};
+    return false;
+}
+function mdClose(){document.getElementById('mdOverlay').style.display='none';}
+</script>
 </body>
 </html>

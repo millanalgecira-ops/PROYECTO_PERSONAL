@@ -2,13 +2,14 @@
 session_start();
 
 require_once __DIR__ . '/../Config/database.php';
+require_once __DIR__ . '/../Config/rutas.php';
 require_once __DIR__ . '/../Models/usuario.php';
 
 class AuthController {
 
     public function login() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header("Location: ../Views/usuarios/login.php");
+            header("Location: " . URL_LOGIN);
             exit;
         }
 
@@ -21,7 +22,7 @@ class AuthController {
                 'title' => 'Campos incompletos',
                 'text'  => 'Debe ingresar correo y contraseña'
             ];
-            header("Location: ../Views/usuarios/login.php");
+            header("Location: " . URL_LOGIN);
             exit;
         }
 
@@ -31,7 +32,7 @@ class AuthController {
                 'title' => 'Correo inválido',
                 'text'  => 'Ingrese un correo electrónico válido'
             ];
-            header("Location: ../Views/usuarios/login.php");
+            header("Location: " . URL_LOGIN);
             exit;
         }
 
@@ -49,7 +50,7 @@ class AuthController {
                     'title' => 'Credenciales incorrectas',
                     'text'  => 'Correo o contraseña incorrectos'
                 ];
-                header("Location: ../Views/usuarios/login.php");
+                header("Location: " . URL_LOGIN);
                 exit;
             }
 
@@ -71,10 +72,10 @@ class AuthController {
 
             switch ($rol) {
                 case 'administrador':
-                    header("Location: ../Views/dashboard/admin.php");
+                    header("Location: " . URL_VIEWS . "/dashboard/admin.php");
                     exit;
                 case 'cocina':
-                    header("Location: ../Views/dashboard/cocina.php");
+                    header("Location: " . URL_VIEWS . "/dashboard/cocina.php");
                     exit;
                 default:
                     $_SESSION['alert'] = [
@@ -82,7 +83,7 @@ class AuthController {
                         'title' => 'Rol no válido',
                         'text'  => 'No se pudo determinar el acceso del usuario'
                     ];
-                    header("Location: ../Views/usuarios/login.php");
+                    header("Location: " . URL_LOGIN);
                     exit;
             }
         }
@@ -111,7 +112,7 @@ class AuthController {
                     'text'  => 'Correo o contraseña incorrectos'
                 ];
             }
-            header("Location: ../Views/usuarios/login.php");
+            header("Location: " . URL_LOGIN);
             exit;
         }
 
@@ -121,7 +122,7 @@ class AuthController {
                 'title' => 'Contraseña incorrecta',
                 'text'  => 'Verifique sus credenciales'
             ];
-            header("Location: ../Views/usuarios/login.php");
+            header("Location: " . URL_LOGIN);
             exit;
         }
 
@@ -135,14 +136,14 @@ class AuthController {
             'rol'        => 'cliente'
         ];
 
-        header("Location: ../Views/dashboard/cliente.php");
+        header("Location: " . URL_VIEWS . "/dashboard/cliente.php");
         exit;
     }
 
     public function logout() {
         session_unset();
         session_destroy();
-        header("Location: ../Views/usuarios/login.php");
+        header("Location: " . URL_LOGIN);
         exit;
     }
 }

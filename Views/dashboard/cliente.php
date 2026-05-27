@@ -7,6 +7,7 @@ $usuario = $_SESSION['usuario'];
 $vista   = $_GET['vista'] ?? 'inicio';
 
 require_once __DIR__ . '/../../Config/database.php';
+require_once __DIR__ . '/../../Config/rutas.php';
 $db = (new Database())->conectar();
 
 // Historial de pedidos del cliente
@@ -190,20 +191,35 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
         <?php elseif ($vista === 'pedidos'): ?>
         <div class="section-card">
-            <div class="section-head"><h2>Historial de pedidos</h2></div>
+            <div class="section-head">
+                <h2>Historial de pedidos</h2>
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                    <select id="filtroEstado" onchange="filtrarPedidos()" style="background:#1c1a18;border:1px solid #2e2b27;border-radius:8px;padding:7px 12px;font-size:13px;font-family:'Barlow',sans-serif;color:#f0ece6;outline:none">
+                        <option value="todos">Todos los estados</option>
+                        <option value="Recibido">Recibido</option>
+                        <option value="En preparacion">En preparación</option>
+                        <option value="Listo">Listo</option>
+                        <option value="Entregado">Entregado</option>
+                        <option value="Pagado">Pagado</option>
+                        <option value="Cancelado">Cancelado</option>
+                    </select>
+                    <input type="date" id="filtroFecha" onchange="filtrarPedidos()" style="background:#1c1a18;border:1px solid #2e2b27;border-radius:8px;padding:7px 12px;font-size:13px;font-family:'Barlow',sans-serif;color:#f0ece6;outline:none">
+                    <button onclick="limpiarFiltros()" style="background:none;border:1px solid #2e2b27;border-radius:8px;padding:7px 12px;font-size:13px;font-family:'Barlow',sans-serif;color:#8a8078;cursor:pointer">Limpiar</button>
+                </div>
+            </div>
             <?php if(empty($pedidos)): ?>
             <div class="empty-state">
                 <p>Aún no tienes pedidos. ¡Explora el catálogo y haz tu primer pedido!</p>
                 <a href="../../Public/index.php" class="btn-orange">Ver Menú →</a>
             </div>
             <?php else: ?>
-            <table>
+            <table id="tablaPedidos">
                 <thead><tr><th>Orden</th><th>Fecha</th><th>Tipo</th><th>Total</th><th>Estado</th><th>Detalle</th></tr></thead>
                 <tbody>
                 <?php
                 $badge_map = ['Recibido'=>'badge-recibido','En preparacion'=>'badge-preparacion','Listo'=>'badge-listo','Entregado'=>'badge-entregado','Pagado'=>'badge-pagado','Cancelado'=>'badge-cancelado'];
                 foreach($pedidos as $p): ?>
-                <tr>
+                <tr data-estado="<?= htmlspecialchars($p['estado']) ?>" data-fecha="<?= date('Y-m-d', strtotime($p['creado_en'])) ?>">
                     <td><span class="numero-orden">#<?= htmlspecialchars($p['numero_orden']) ?></span></td>
                     <td style="color:var(--muted);font-size:12px"><?= date('d/m/Y H:i',strtotime($p['creado_en'])) ?></td>
                     <td><?= htmlspecialchars($p['tipo']) ?><?= $p['mesa_numero']?' · Mesa '.$p['mesa_numero']:'' ?></td>
@@ -220,5 +236,40 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
     </div>
 </div>
+</body>
+</html>
+
+<script>
+function filtrarPedidos() {
+    const estado = document.getElementById('filtroEstado').value;
+    const fecha  = document.getElementById('filtroFecha').value;
+    const filas  = document.querySelectorAll('#tablaPedidos tbody tr');
+    let visibles = 0;
+
+    filas.forEach(fila => {
+        const matchEstado = estado === 'todos' || fila.dataset.estado === estado;
+        const matchFecha  = !fecha || fila.dataset.fecha === fecha;
+        const mostrar = matchEstado && matchFecha;
+        fila.style.display = mostrar ? '' : 'none';
+        if (mostrar) visibles++;
+    });
+
+    // Mostrar mensaje si no hay resultados
+    let msg = document.getElementById('msgSinPedidos');
+    if (!msg) {
+        msg = document.createElement('tr');
+        msg.id = 'msgSinPedidos';
+        msg.innerHTML = '<td colspan="6" style="text-align:center;padding:40px;color:#8a8078">No hay pedidos con ese filtro</td>';
+        document.querySelector('#tablaPedidos tbody').appendChild(msg);
+    }
+    msg.style.display = visibles === 0 ? '' : 'none';
+}
+
+function limpiarFiltros() {
+    document.getElementById('filtroEstado').value = 'todos';
+    document.getElementById('filtroFecha').value  = '';
+    filtrarPedidos();
+}
+</script>
 </body>
 </html>

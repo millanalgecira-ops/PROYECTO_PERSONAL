@@ -228,6 +228,7 @@ $usuario = $_SESSION['usuario'];
 
         <?php
         require_once __DIR__ . '/../../Config/database.php';
+require_once __DIR__ . '/../../Config/rutas.php';
         require_once __DIR__ . '/../../Models/usuario.php';
         $db = (new Database())->conectar();
         $usuarioModel = new Usuario($db);

@@ -2,6 +2,7 @@
 session_start();
 
 require_once __DIR__ . '/../Config/database.php';
+require_once __DIR__ . '/../Config/rutas.php';
 require_once __DIR__ . '/../Models/usuario.php';
 
 class UsuarioControllers {
@@ -9,7 +10,7 @@ class UsuarioControllers {
     public function registrar() {
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header("Location: ../Views/usuarios/registre.php");
+            header("Location: " . URL_REGISTRO);
             exit;
         }
 
@@ -27,7 +28,7 @@ class UsuarioControllers {
                 'title' => 'Campos incompletos',
                 'text'  => 'Debe completar todos los campos'
             ];
-            header("Location: ../Views/usuarios/registre.php");
+            header("Location: " . URL_REGISTRO);
             exit;
         }
 
@@ -37,7 +38,7 @@ class UsuarioControllers {
                 'title' => 'Correo inválido',
                 'text'  => 'Ingrese un correo válido'
             ];
-            header("Location: ../Views/usuarios/registre.php");
+            header("Location: " . URL_REGISTRO);
             exit;
         }
 
@@ -47,7 +48,7 @@ class UsuarioControllers {
                 'title' => 'Error',
                 'text'  => 'Las contraseñas no coinciden'
             ];
-            header("Location: ../Views/usuarios/registre.php");
+            header("Location: " . URL_REGISTRO);
             exit;
         }
 
@@ -57,7 +58,7 @@ class UsuarioControllers {
                 'title' => 'Contraseña inválida',
                 'text'  => 'La contraseña debe tener al menos 6 caracteres'
             ];
-            header("Location: ../Views/usuarios/registre.php");
+            header("Location: " . URL_REGISTRO);
             exit;
         }
 
@@ -73,7 +74,7 @@ class UsuarioControllers {
                 'title' => 'Correo existente',
                 'text'  => 'Este correo ya está registrado'
             ];
-            header("Location: ../Views/usuarios/registre.php");
+            header("Location: " . URL_REGISTRO);
             exit;
         }
 
@@ -96,7 +97,7 @@ class UsuarioControllers {
                 'id_rol'     => 3,
                 'rol'        => 'cliente'
             ];
-            header("Location: ../Views/dashboard/cliente.php");
+            header("Location: " . URL_VIEWS . "/dashboard/cliente.php");
             exit;
         } else {
             $_SESSION['alert'] = [
@@ -104,7 +105,7 @@ class UsuarioControllers {
                 'title' => 'Error',
                 'text'  => $resultado
             ];
-            header("Location: ../Views/usuarios/registre.php");
+            header("Location: " . URL_REGISTRO);
             exit;
         }
     }

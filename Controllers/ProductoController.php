@@ -2,9 +2,10 @@
 session_start();
 
 require_once __DIR__ . '/../Config/database.php';
+require_once __DIR__ . '/../Config/rutas.php';
 
 if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'administrador') {
-    header("Location: ../Views/usuarios/login.php");
+    header("Location: " . URL_LOGIN);
     exit;
 }
 
@@ -41,7 +42,7 @@ switch ($accion) {
                 $_SESSION['alert'] = ['icon'=>'success','title'=>'Éxito','text'=>'Producto creado correctamente'];
             }
         }
-        header("Location: ../Views/dashboard/productos.php");
+        header("Location: " . URL_VIEWS . "/dashboard/productos.php");
         exit;
 
     case 'editar':
@@ -73,7 +74,7 @@ switch ($accion) {
                 $_SESSION['alert'] = ['icon'=>'success','title'=>'Éxito','text'=>'Producto actualizado correctamente'];
             }
         }
-        header("Location: ../Views/dashboard/productos.php");
+        header("Location: " . URL_VIEWS . "/dashboard/productos.php");
         exit;
 
     case 'eliminar':
@@ -84,7 +85,7 @@ switch ($accion) {
             $stmt->execute();
             $_SESSION['alert'] = ['icon'=>'success','title'=>'Eliminado','text'=>'Producto eliminado correctamente'];
         }
-        header("Location: ../Views/dashboard/productos.php");
+        header("Location: " . URL_VIEWS . "/dashboard/productos.php");
         exit;
 
     case 'toggleDisponible':
@@ -98,11 +99,11 @@ switch ($accion) {
             $stmt->execute();
             $_SESSION['alert'] = ['icon'=>'success','title'=>'Éxito','text'=>'Estado del producto actualizado'];
         }
-        header("Location: ../Views/dashboard/productos.php");
+        header("Location: " . URL_VIEWS . "/dashboard/productos.php");
         exit;
 
     default:
-        header("Location: ../Views/dashboard/productos.php");
+        header("Location: " . URL_VIEWS . "/dashboard/productos.php");
         exit;
 }
 ?>

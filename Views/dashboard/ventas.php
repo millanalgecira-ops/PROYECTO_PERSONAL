@@ -9,6 +9,7 @@ $alert   = $_SESSION['alert'] ?? null;
 unset($_SESSION['alert']);
 
 require_once __DIR__ . '/../../Config/database.php';
+require_once __DIR__ . '/../../Config/rutas.php';
 $db = (new Database())->conectar();
 
 // Filtro por fecha

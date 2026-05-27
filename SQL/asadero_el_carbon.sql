@@ -5,11 +5,7 @@
 -- Compatible con MySQL/MariaDB en Laragon
 -- ============================================================
 
-CREATE DATABASE IF NOT EXISTS asadero_el_carbon
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
 
-USE asadero_el_carbon;
 
 SET FOREIGN_KEY_CHECKS = 0;
 

@@ -2,9 +2,10 @@
 session_start();
 
 require_once __DIR__ . '/../Config/database.php';
+require_once __DIR__ . '/../Config/rutas.php';
 
 if (!isset($_SESSION['usuario']) || !in_array($_SESSION['usuario']['rol'], ['administrador', 'cocina'])) {
-    header("Location: ../Views/usuarios/login.php");
+    header("Location: " . URL_LOGIN);
     exit;
 }
 
@@ -22,7 +23,7 @@ switch ($accion) {
             $db->prepare("UPDATE mesas SET estado='Disponible', liberada_en=NOW() WHERE id=(SELECT mesa_id FROM pedidos WHERE id=:id)")->execute([':id'=>$id]);
             $_SESSION['alert'] = ['icon'=>'success','text'=>'Pedido cancelado correctamente'];
         }
-        header("Location: ../Views/dashboard/pedidos.php");
+        header("Location: " . URL_VIEWS . "/dashboard/pedidos.php");
         exit;
 
     case 'cambiarEstado':
@@ -53,7 +54,7 @@ switch ($accion) {
         exit;
 
     default:
-        header("Location: ../Views/dashboard/pedidos.php");
+        header("Location: " . URL_VIEWS . "/dashboard/pedidos.php");
         exit;
 }
 ?>
