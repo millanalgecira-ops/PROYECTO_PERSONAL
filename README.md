@@ -210,5 +210,5 @@ http://127.0.0.1:8081/proyecto_personal/Public/index.php
 ## 👨‍💻 Autor
 
 Desarrollado como proyecto personal académico.  
-**Institución:** *(nombre de tu institución)*  
-**Año:** 2026
+Institución: Sena  
+Año: 2026
