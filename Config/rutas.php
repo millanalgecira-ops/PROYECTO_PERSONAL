@@ -1,8 +1,5 @@
 <?php
-// ============================================================
-//  Configuración de rutas del sistema
-//  Detecta automáticamente si está en local o en hosting
-// ============================================================
+
 
 // Ruta absoluta a la raíz del proyecto
 define('ROOT_PATH', dirname(__DIR__));
